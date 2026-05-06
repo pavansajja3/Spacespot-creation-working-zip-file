@@ -16,6 +16,12 @@ type SpaceFormState = {
   managedByEmail: string;
   managedByPhone: string;
   spaceAddress: string;
+  city: string;
+  state: string;
+  country: string;
+  postalCode: string;
+  latitude: string;
+  longitude: string;
   activeFrom: string;
   activeTo: string;
   ownership: string;
@@ -118,7 +124,15 @@ export default function CreateSpace() {
   const [form, setForm] = useState<SpaceFormState>({
     spaceName: '', category: 'Retail', spaceWebsite: '',
     tradingHours: '', managedByEmail: '', managedByPhone: '',
-    spaceAddress: '', activeFrom: '', activeTo: '',
+    spaceAddress: '',
+    city: '',
+    state: '',
+    country: '',
+    postalCode: '',
+    latitude: '',
+    longitude: '',
+    activeFrom: '',
+    activeTo: '',
     ownership: '', management: '',
     overallRentableArea: '', permanentRentableArea: '',
     otherRentableArea: '', expectedFootTraffic: '',
@@ -154,16 +168,57 @@ export default function CreateSpace() {
       navigate("/login");
       return;
     }
+    if (!form.spaceName.trim()) {
+  toast.error("Space name is required");
+  return;
+}
 
+if (!form.spaceAddress.trim()) {
+  toast.error("Address is required");
+  return;
+}
+
+if (!form.city.trim()) {
+  toast.error("City is required");
+  return;
+}
+
+if (!form.state.trim()) {
+  toast.error("State is required");
+  return;
+}
+
+if (!form.country.trim()) {
+  toast.error("Country is required");
+  return;
+}
+
+if (!form.postalCode.trim()) {
+  toast.error("Postal code is required");
+  return;
+}
+
+if (!form.latitude.trim()) {
+  toast.error("Latitude is required");
+  return;
+}
+
+if (!form.longitude.trim()) {
+  toast.error("Longitude is required");
+  return;
+}
     const formData = new FormData();
+    
 
 formData.append("name", form.spaceName);
 formData.append("description", "");
 formData.append("address", form.spaceAddress);
-formData.append("city", "Hyderabad");
-formData.append("state", "Telangana");
-formData.append("country", "India");
-formData.append("postal_code", "");
+formData.append("city", form.city);
+formData.append("state", form.state);
+formData.append("country", form.country);
+formData.append("postal_code", form.postalCode);
+formData.append("latitude", String(Number(form.latitude)));
+formData.append("longitude", String(Number(form.longitude)));
 formData.append("total_area_sqm", String(Number(form.overallRentableArea) || 0));
 formData.append("floor_count", String(Number(form.addFloors) || 1));
 const floors = floorNames.map((name, index) => ({
@@ -209,7 +264,7 @@ const response = await fetch("http://localhost:3000/api/spaces", {
     if (!response.ok) {
       const errData = await response.json();
       console.error(errData);
-      throw new Error("Failed to create space");
+      throw new Error(errData.message || "Failed to create space");
     }
 
     toast.success("Space submitted for approval");
@@ -217,7 +272,7 @@ const response = await fetch("http://localhost:3000/api/spaces", {
 
   } catch (err) {
     console.error("Error creating space:", err);
-    toast.error("Failed to create space");
+    toast.error(err instanceof Error ? err.message : "Failed to create space");
   }
 };
   const updateFloors = (
@@ -381,7 +436,119 @@ const response = await fetch("http://localhost:3000/api/spaces", {
               </div>
 
               {textField('Managed By Phone', Phone, 'managedByPhone', '+61 411111111')}
-              {textField('Space Address', MapPin, 'spaceAddress', '10 Bond Street, Chelsea, Sydney 2000')}
+              <div>
+                <label style={labelStyle}>{fieldIcon(MapPin)} Space Address</label>
+
+                <textarea
+                  style={{
+                    ...inputStyle,
+                    minHeight: '80px',
+                    resize: 'vertical'
+                  }}
+                  placeholder="Enter complete address"
+                  value={form.spaceAddress}
+                  onChange={(e) => updateField('spaceAddress', e.target.value)}
+                />
+              </div>
+              <div style={twoColStyle}>
+                <div>
+                  <label style={labelStyle}>
+                    {fieldIcon(MapPin)} City
+                  </label>
+
+                  <input
+                    style={inputStyle}
+                    placeholder="e.g., Sydney"
+                    autoComplete="address-level2"
+                    value={form.city}
+                    onChange={(e) => updateField('city', e.target.value)}
+                  />
+                </div>
+
+                <div>
+                  <label style={labelStyle}>
+                    {fieldIcon(MapPin)} State
+                  </label>
+
+                  <input
+                    style={inputStyle}
+                    placeholder="e.g., NSW"
+                    autoComplete="address-level1"
+                    value={form.state}
+                    onChange={(e) => updateField('state', e.target.value)}
+                  />
+                </div>
+              </div>
+
+              <div style={twoColStyle}>
+  <div>
+    <label style={labelStyle}>
+      {fieldIcon(Globe)} Country
+      <span style={{ color: 'red' }}>*</span>
+    </label>
+
+    <input
+      style={inputStyle}
+      placeholder="e.g., Australia"
+      autoComplete="country-name"
+      value={form.country}
+      onChange={(e) => updateField('country', e.target.value)}
+    />
+  </div>
+
+  <div>
+    <label style={labelStyle}>
+      {fieldIcon(MapPin)} Postal Code
+      <span style={{ color: 'red' }}>*</span>
+    </label>
+
+    <input
+      style={inputStyle}
+      placeholder="e.g., 2000"
+      autoComplete="postal-code"
+      value={form.postalCode}
+      onChange={(e) => updateField('postalCode', e.target.value)}
+    />
+  </div>
+</div>
+
+              <div style={twoColStyle}>
+                {/* Latitude */}
+                <div>
+                  <label style={labelStyle}>
+                    {fieldIcon(MapPin)} Latitude
+                  </label>
+
+                  <input
+                    type="number"
+                    step="any"
+                    min="-90"
+                    max="90"
+                    style={inputStyle}
+                    placeholder="e.g., -33.8688"
+                    value={form.latitude}
+                    onChange={(e) => updateField('latitude', e.target.value)}
+                  />
+                </div>
+
+                {/* Longitude */}
+                <div>
+                  <label style={labelStyle}>
+                    {fieldIcon(MapPin)} Longitude
+                  </label>
+
+                  <input
+                    type="number"
+                    step="any"
+                    min="-180"
+                    max="180"
+                    style={inputStyle}
+                    placeholder="e.g., 151.2093"
+                    value={form.longitude}
+                    onChange={(e) => updateField('longitude', e.target.value)}
+                  />
+                </div>
+              </div>
 
               {/* Space Images */}
               <div>
