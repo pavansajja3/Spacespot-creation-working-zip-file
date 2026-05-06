@@ -1,0 +1,153 @@
+@import "../styles/spacespot-colors.css";
+
+@import "tailwindcss";
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  font-family: var(--spacespot-font-primary);
+  color: var(--spacespot-text-primary);
+  background-color: var(--spacespot-app-background);
+}
+
+html,
+body {
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+body {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] body {
+  color-scheme: dark;
+}
+
+/* Global Design System Rules */
+h1 {
+  font-size: var(--spacespot-heading-1);
+  font-weight: var(--spacespot-weight-regular);
+  color: var(--spacespot-text-primary);
+  line-height: 1.1;
+}
+
+h2 {
+  font-size: var(--spacespot-heading-2);
+  font-weight: var(--spacespot-weight-semibold);
+  color: var(--spacespot-text-primary);
+  line-height: 1.2;
+}
+
+h3 {
+  font-size: var(--spacespot-heading-3);
+  font-weight: var(--spacespot-weight-semibold);
+  color: var(--spacespot-text-primary);
+  line-height: 1.25;
+}
+
+h4 {
+  font-size: var(--spacespot-heading-4);
+  font-weight: var(--spacespot-weight-semibold);
+  color: var(--spacespot-text-primary);
+  line-height: 1.3;
+}
+
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] h4 {
+  color: var(--spacespot-text-primary) !important;
+}
+
+:root[data-theme="dark"] [style*="color: var(--spacespot-navy-primary)"],
+:root[data-theme="dark"] [style*="color:var(--spacespot-navy-primary)"],
+:root[data-theme="dark"] [style*='color: var(--spacespot-navy-primary)'],
+:root[data-theme="dark"] [style*='color:var(--spacespot-navy-primary)'] {
+  color: var(--spacespot-text-primary) !important;
+}
+
+p,
+span,
+div,
+label {
+  font-size: var(--spacespot-body);
+}
+
+small {
+  font-size: var(--spacespot-body-sm);
+}
+
+button {
+  border-radius: var(--spacespot-radius-base);
+  font-size: var(--spacespot-body-sm);
+  font-weight: var(--spacespot-weight-semibold);
+}
+
+input,
+select,
+textarea {
+  border-radius: var(--spacespot-radius-base);
+  font-size: var(--spacespot-body-sm);
+  color: var(--spacespot-text-primary);
+  background-color: var(--spacespot-surface-elevated);
+  border-color: var(--spacespot-border-subtle);
+}
+
+.spacespot-page {
+  background-color: var(--spacespot-app-background);
+  color: var(--spacespot-text-primary);
+}
+
+.spacespot-card {
+  background-color: var(--spacespot-surface-primary);
+  border: 1px solid var(--spacespot-border-subtle);
+  border-radius: var(--spacespot-radius-base);
+}
+
+.spacespot-chip-success {
+  color: var(--spacespot-success);
+  background-color: var(--spacespot-success-light);
+}
+
+.spacespot-chip-warning {
+  color: var(--spacespot-warning);
+  background-color: var(--spacespot-warning-light);
+}
+
+.spacespot-chip-error {
+  color: var(--spacespot-error);
+  background-color: var(--spacespot-error-light);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--spacespot-text-secondary);
+  opacity: 1;
+}
+
+@keyframes spacespot-logo-glow {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(20, 216, 204, 0));
+    transform: translateZ(0) scale(1);
+  }
+  50% {
+    filter: drop-shadow(0 0 8px rgba(20, 216, 204, 0.45)) drop-shadow(0 0 16px rgba(20, 216, 204, 0.3));
+    transform: translateZ(0) scale(1.01);
+  }
+  100% {
+    filter: drop-shadow(0 0 0 rgba(20, 216, 204, 0));
+    transform: translateZ(0) scale(1);
+  }
+}
+
+.spacespot-logo-glow {
+  animation: spacespot-logo-glow 3.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .spacespot-logo-glow {
+    animation: none;
+  }
+}

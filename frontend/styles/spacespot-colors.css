@@ -1,0 +1,444 @@
+/* SpaceSpot Design System Colors */
+/* Official Brand Colors - Commercial Lease Management Platform */
+
+:root {
+  /* Primary Cyan - Main brand color for CTAs and highlights */
+  --spacespot-cyan-50: #ECFFFE;
+  --spacespot-cyan-100: #CFFFFE;
+  --spacespot-cyan-pale: #E0F9F7; /* Pale Cyan - Subtle backgrounds, cards */
+  --spacespot-cyan-300: #9FEBE7;
+  --spacespot-cyan-light: #7EDDD3; /* Light Cyan - Light blues, backgrounds */
+  --spacespot-cyan-primary: #14D8CC; /* Primary Cyan - Primary actions, CTAs, highlights */
+  --spacespot-cyan-600: #11BAB0;
+  --spacespot-cyan-dark: #0EA59A; /* Dark Cyan - Active states, pressed buttons */
+  --spacespot-cyan-800: #0A7972;
+  --spacespot-cyan-900: #075550;
+
+  /* Primary Navy - Dark backgrounds and headers */
+  --spacespot-navy-dark: #111827; /* Dark Navy - Deep backgrounds, footers */
+  --spacespot-navy-100: #1A202E;
+  --spacespot-navy-primary: #1F2937; /* Primary Navy - Headers, dark backgrounds */
+  --spacespot-navy-300: #293546;
+  --spacespot-navy-light: #374151; /* Light Navy - Secondary backgrounds */
+  --spacespot-navy-500: #4B5563;
+  --spacespot-navy-600: #6B7280;
+  --spacespot-navy-700: #9CA3AF;
+  --spacespot-navy-800: #D1D5DB;
+  --spacespot-navy-900: #F3F4F6;
+
+  /* Semantic Colors */
+  --spacespot-success: #10B981; /* Success Green - Success states, positive metrics */
+  --spacespot-success-light: #D1FAE5;
+  --spacespot-warning: #F59E0B; /* Warning Amber - Warnings, important notices */
+  --spacespot-warning-light: #FEF3C7;
+  --spacespot-error: #EF4444; /* Error Red - Errors, expired documents */
+  --spacespot-error-light: #FEE2E2;
+  --spacespot-info: #3B82F6; /* Info Blue - Information, links */
+  --spacespot-info-light: #DBEAFE;
+
+  /* Neutral Grays */
+  --spacespot-white: #FFFFFF; /* White - Backgrounds, cards, text on dark */
+  --spacespot-gray-50: #F9FAFB; /* Gray 50 - Light backgrounds */
+  --spacespot-gray-100: #F3F4F6;
+  --spacespot-gray-200: #E5E7EB; /* Gray 200 - Borders, dividers */
+  --spacespot-gray-300: #D1D5DB;
+  --spacespot-gray-400: #9CA3AF;
+  --spacespot-gray-500: #6B7280; /* Gray 500 - Secondary text */
+  --spacespot-gray-600: #4B5563;
+  --spacespot-gray-700: #374151; /* Gray 700 - Body text */
+  --spacespot-gray-800: #1F2937;
+  --spacespot-gray-900: #111827; /* Gray 900 - Darkest text */
+
+  /* Brand Gradients */
+  --spacespot-gradient-primary: linear-gradient(135deg, #14D8CC 0%, #0EA59A 100%);
+  --spacespot-gradient-dark: linear-gradient(135deg, #111827 0%, #1F2937 100%);
+  --spacespot-gradient-vibrant: linear-gradient(135deg, #14D8CC 0%, #1F2937 100%);
+  --spacespot-gradient-subtle: linear-gradient(135deg, #E0F9F7 0%, #CFFFFE 100%);
+  --spacespot-gradient-success: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  --spacespot-gradient-alert: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+
+  /* Shadows */
+  --spacespot-shadow-xs: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --spacespot-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+  --spacespot-shadow-base: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --spacespot-shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --spacespot-shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --spacespot-shadow-xl: 0 25px 50px -12px rgb(0 0 0 / 0.25);
+  --spacespot-shadow-2xl: 0 25px 50px -12px rgb(0 0 0 / 0.5);
+
+  /* Brand colored shadows */
+  --spacespot-shadow-cyan: 0 10px 25px -5px rgb(20 216 204 / 0.4);
+  --spacespot-shadow-navy: 0 10px 25px -5px rgb(31 41 55 / 0.3);
+  --spacespot-shadow-success: 0 10px 25px -5px rgb(16 185 129 / 0.3);
+
+  /* Spacing Scale (in px) */
+  --spacespot-space-0: 0px;
+  --spacespot-space-1: 4px;
+  --spacespot-space-2: 8px;
+  --spacespot-space-3: 12px;
+  --spacespot-space-4: 16px;
+  --spacespot-space-5: 20px;
+  --spacespot-space-6: 24px;
+  --spacespot-space-8: 32px;
+  --spacespot-space-10: 40px;
+  --spacespot-space-12: 48px;
+  --spacespot-space-16: 64px;
+  --spacespot-space-20: 80px;
+
+  /* Border Radius */
+  --spacespot-radius-none: 0px;
+  --spacespot-radius-sm: 4px;
+  --spacespot-radius-base: 8px;
+  --spacespot-radius-md: 12px;
+  --spacespot-radius-lg: 16px;
+  --spacespot-radius-xl: 20px;
+  --spacespot-radius-2xl: 24px;
+  --spacespot-radius-3xl: 32px;
+  --spacespot-radius-full: 9999px;
+
+  /* Typography */
+  --spacespot-font-primary: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --spacespot-font-accent: 'Space Grotesk', Inter, sans-serif;
+  --spacespot-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Font Sizes */
+  --spacespot-text-xs: 12px;
+  --spacespot-text-sm: 14px;
+  --spacespot-text-base: 16px;
+  --spacespot-text-lg: 18px;
+  --spacespot-text-xl: 20px;
+  --spacespot-text-2xl: 24px;
+  --spacespot-text-3xl: 30px;
+  --spacespot-text-4xl: 36px;
+  --spacespot-text-5xl: 48px;
+
+  /* Design System Typography Scale */
+  --spacespot-heading-1: 45px;
+  --spacespot-heading-2: 27px;
+  --spacespot-heading-3: 20px;
+  --spacespot-heading-4: 18px;
+  --spacespot-body-lg: 16px;
+  --spacespot-body: 14px;
+  --spacespot-body-sm: 12px;
+
+  /* Line Heights */
+  --spacespot-leading-xs: 16px;
+  --spacespot-leading-sm: 20px;
+  --spacespot-leading-base: 24px;
+  --spacespot-leading-lg: 28px;
+  --spacespot-leading-xl: 28px;
+  --spacespot-leading-2xl: 32px;
+  --spacespot-leading-3xl: 36px;
+  --spacespot-leading-4xl: 40px;
+  --spacespot-leading-5xl: 1;
+
+  /* Font Weights */
+  --spacespot-weight-regular: 400;
+  --spacespot-weight-medium: 500;
+  --spacespot-weight-semibold: 600;
+  --spacespot-weight-bold: 700;
+  --spacespot-weight-black: 900;
+
+  /* Design System Spacing Scale */
+  --spacespot-spacing-xs: 4px;
+  --spacespot-spacing-sm: 8px;
+  --spacespot-spacing-md: 16px;
+  --spacespot-spacing-lg: 24px;
+  --spacespot-spacing-xl: 32px;
+  --spacespot-spacing-2xl: 48px;
+
+  /* Semantic application tokens */
+  --spacespot-app-background: #F8FAFC;
+  --spacespot-surface-primary: #FFFFFF;
+  --spacespot-surface-elevated: #FFFFFF;
+  --spacespot-surface-secondary: #F9FAFB;
+  --spacespot-text-primary: #1F2937;
+  --spacespot-text-secondary: #6B7280;
+  --spacespot-border-subtle: #E5E7EB;
+  --spacespot-border-strong: #6B7280;
+  --spacespot-hover-subtle: #E6FBF8;
+  --spacespot-dashboard-panel-start: #FFFFFF;
+  --spacespot-dashboard-panel-mid: #E6FBF8;
+  --spacespot-dashboard-panel-end: #E0F9F7;
+  --spacespot-card-surface: #FFFFFF;
+  --spacespot-card-border: #6B7280;
+  --spacespot-chart-grid: #8A94A6;
+  --spacespot-chart-available: #6B7280;
+  --spacespot-chart-rented: #14D8CC;
+  --spacespot-chart-marker-border: rgba(40, 45, 50, 0.7);
+  --spacespot-chart-marker-outer-ring: transparent;
+  --spacespot-tooltip-surface: #E0F9F7;
+  --spacespot-calendar-surface: #0F1724;
+  --spacespot-calendar-divider: #2F3D56;
+  --spacespot-calendar-cell: #1F2937;
+  --spacespot-calendar-cell-hover: #273248;
+  --spacespot-calendar-detail-surface: #05121D;
+  --spacespot-calendar-detail-accent: #0A1E2F;
+  --spacespot-text-inverse-muted: #9DA9C3;
+  --spacespot-logo-backdrop: transparent;
+  --spacespot-logo-border: transparent;
+  --spacespot-logo-shadow: none;
+  --spacespot-logo-padding: 0px;
+  --spacespot-logo-radius: 0px;
+
+  /* Landing page semantic tokens */
+  --spacespot-hero-title: #17345C;
+  --spacespot-hero-body: rgba(23, 52, 92, 0.82);
+  --spacespot-glass-surface: rgba(255, 255, 255, 0.72);
+  --spacespot-glass-surface-strong: rgba(255, 255, 255, 0.95);
+  --spacespot-glass-border: rgba(255, 255, 255, 0.75);
+  --spacespot-elevation-hero: 0 20px 38px rgba(23, 52, 92, 0.08);
+  --spacespot-elevation-panel: 0 26px 52px rgba(23, 52, 92, 0.14);
+  --spacespot-elevation-card: 0 24px 44px rgba(23, 52, 92, 0.08);
+  --spacespot-elevation-button: 0 14px 24px rgba(15, 182, 197, 0.2);
+}
+
+:root[data-theme="dark"] {
+  --spacespot-app-background: #07141F;
+  --spacespot-surface-primary: #0F1724;
+  --spacespot-surface-elevated: #13202E;
+  --spacespot-surface-secondary: #1A2635;
+  --spacespot-text-primary: #E5EEF6;
+  --spacespot-text-secondary: #9FB0C1;
+  --spacespot-border-subtle: #2B3A4E;
+  --spacespot-border-strong: #41526A;
+  --spacespot-hover-subtle: rgba(20, 216, 204, 0.12);
+  --spacespot-dashboard-panel-start: #0E1724;
+  --spacespot-dashboard-panel-mid: #102130;
+  --spacespot-dashboard-panel-end: #132635;
+  --spacespot-card-surface: #13202E;
+  --spacespot-card-border: #41526A;
+  --spacespot-chart-grid: #6A7B91;
+  --spacespot-chart-available: #CBD5E1;
+  --spacespot-chart-rented: #14D8CC;
+  --spacespot-chart-marker-border: rgba(30, 41, 59, 0.9);
+  --spacespot-chart-marker-outer-ring: rgba(203, 213, 225, 0.68);
+  --spacespot-tooltip-surface: #132635;
+  --spacespot-calendar-surface: #0B1320;
+  --spacespot-calendar-divider: #324257;
+  --spacespot-calendar-cell: #162231;
+  --spacespot-calendar-cell-hover: #1C2C3E;
+  --spacespot-calendar-detail-surface: #09111C;
+  --spacespot-calendar-detail-accent: #112131;
+  --spacespot-text-inverse-muted: #9FB0C1;
+  --spacespot-logo-backdrop: linear-gradient(180deg, rgba(236, 255, 254, 0.98) 0%, rgba(224, 249, 247, 0.94) 100%);
+  --spacespot-logo-border: rgba(20, 216, 204, 0.35);
+  --spacespot-logo-shadow: 0 10px 20px rgba(0, 0, 0, 0.22);
+  --spacespot-logo-padding: 8px 12px;
+  --spacespot-logo-radius: 16px;
+  --spacespot-shadow-sm: 0 1px 10px rgba(0, 0, 0, 0.3);
+  --spacespot-shadow-base: 0 6px 16px rgba(0, 0, 0, 0.28);
+  --spacespot-shadow-md: 0 12px 24px rgba(0, 0, 0, 0.32);
+
+  /* Landing page semantic tokens */
+  --spacespot-hero-title: #E5EEF6;
+  --spacespot-hero-body: rgba(229, 238, 246, 0.86);
+  --spacespot-glass-surface: rgba(19, 32, 46, 0.78);
+  --spacespot-glass-surface-strong: rgba(19, 32, 46, 0.9);
+  --spacespot-glass-border: rgba(65, 82, 106, 0.55);
+  --spacespot-elevation-hero: 0 18px 34px rgba(0, 0, 0, 0.26);
+  --spacespot-elevation-panel: 0 22px 42px rgba(0, 0, 0, 0.34);
+  --spacespot-elevation-card: 0 20px 36px rgba(0, 0, 0, 0.3);
+  --spacespot-elevation-button: 0 14px 24px rgba(20, 216, 204, 0.22);
+}
+
+/* Utility Classes for Quick Access */
+
+/* Background Colors */
+.spacespot-bg-cyan {
+  background-color: var(--spacespot-cyan-primary);
+}
+
+.spacespot-bg-cyan-light {
+  background-color: var(--spacespot-cyan-light);
+}
+
+.spacespot-bg-cyan-dark {
+  background-color: var(--spacespot-cyan-dark);
+}
+
+.spacespot-bg-navy {
+  background-color: var(--spacespot-navy-primary);
+}
+
+.spacespot-bg-navy-dark {
+  background-color: var(--spacespot-navy-dark);
+}
+
+.spacespot-bg-success {
+  background-color: var(--spacespot-success);
+}
+
+.spacespot-bg-warning {
+  background-color: var(--spacespot-warning);
+}
+
+.spacespot-bg-error {
+  background-color: var(--spacespot-error);
+}
+
+/* Text Colors */
+.spacespot-text-cyan {
+  color: var(--spacespot-cyan-primary);
+}
+
+.spacespot-text-cyan-dark {
+  color: var(--spacespot-cyan-dark);
+}
+
+.spacespot-text-navy {
+  color: var(--spacespot-navy-primary);
+}
+
+.spacespot-text-success {
+  color: var(--spacespot-success);
+}
+
+.spacespot-text-warning {
+  color: var(--spacespot-warning);
+}
+
+.spacespot-text-error {
+  color: var(--spacespot-error);
+}
+
+/* Gradients */
+.spacespot-gradient-primary {
+  background: var(--spacespot-gradient-primary);
+}
+
+.spacespot-gradient-dark {
+  background: var(--spacespot-gradient-dark);
+}
+
+.spacespot-gradient-vibrant {
+  background: var(--spacespot-gradient-vibrant);
+}
+
+.spacespot-gradient-subtle {
+  background: var(--spacespot-gradient-subtle);
+}
+
+/* Border Colors */
+.spacespot-border-cyan {
+  border-color: var(--spacespot-cyan-primary);
+}
+
+.spacespot-border-navy {
+  border-color: var(--spacespot-navy-primary);
+}
+
+.spacespot-border-success {
+  border-color: var(--spacespot-success);
+}
+
+.spacespot-border-warning {
+  border-color: var(--spacespot-warning);
+}
+
+.spacespot-border-error {
+  border-color: var(--spacespot-error);
+}
+
+/* Shadows */
+.spacespot-shadow-cyan {
+  box-shadow: var(--spacespot-shadow-cyan);
+}
+
+.spacespot-shadow-navy {
+  box-shadow: var(--spacespot-shadow-navy);
+}
+
+.spacespot-shadow-success {
+  box-shadow: var(--spacespot-shadow-success);
+}
+
+/* Component Classes */
+
+/* Primary Button */
+.spacespot-btn-primary {
+  background: var(--spacespot-gradient-primary);
+  color: var(--spacespot-white);
+  padding: var(--spacespot-space-3) var(--spacespot-space-6);
+  border-radius: var(--spacespot-radius-lg);
+  font-family: var(--spacespot-font-primary);
+  font-size: var(--spacespot-text-base);
+  font-weight: var(--spacespot-weight-semibold);
+  box-shadow: var(--spacespot-shadow-cyan);
+  transition: all 0.3s ease;
+}
+
+.spacespot-btn-primary:hover {
+  box-shadow: var(--spacespot-shadow-lg);
+  transform: translateY(-2px);
+}
+
+/* Secondary Button */
+.spacespot-btn-secondary {
+  background: var(--spacespot-navy-primary);
+  color: var(--spacespot-white);
+  padding: var(--spacespot-space-3) var(--spacespot-space-6);
+  border-radius: var(--spacespot-radius-lg);
+  font-family: var(--spacespot-font-primary);
+  font-size: var(--spacespot-text-base);
+  font-weight: var(--spacespot-weight-semibold);
+  transition: all 0.3s ease;
+}
+
+.spacespot-btn-secondary:hover {
+  background: var(--spacespot-navy-dark);
+}
+
+/* Card Component */
+.spacespot-card {
+  background: var(--spacespot-white);
+  border-radius: var(--spacespot-radius-xl);
+  box-shadow: var(--spacespot-shadow-base);
+  border: 1px solid var(--spacespot-gray-200);
+  padding: var(--spacespot-space-6);
+}
+
+.spacespot-card:hover {
+  box-shadow: var(--spacespot-shadow-md);
+}
+
+/* Status Badge */
+.spacespot-badge-success {
+  background: var(--spacespot-success-light);
+  color: var(--spacespot-success);
+  padding: var(--spacespot-space-1) var(--spacespot-space-3);
+  border-radius: var(--spacespot-radius-full);
+  font-size: var(--spacespot-text-sm);
+  font-weight: var(--spacespot-weight-medium);
+  border-left: 4px solid var(--spacespot-success);
+}
+
+.spacespot-badge-warning {
+  background: var(--spacespot-warning-light);
+  color: var(--spacespot-warning);
+  padding: var(--spacespot-space-1) var(--spacespot-space-3);
+  border-radius: var(--spacespot-radius-full);
+  font-size: var(--spacespot-text-sm);
+  font-weight: var(--spacespot-weight-medium);
+  border-left: 4px solid var(--spacespot-warning);
+}
+
+.spacespot-badge-error {
+  background: var(--spacespot-error-light);
+  color: var(--spacespot-error);
+  padding: var(--spacespot-space-1) var(--spacespot-space-3);
+  border-radius: var(--spacespot-radius-full);
+  font-size: var(--spacespot-text-sm);
+  font-weight: var(--spacespot-weight-medium);
+  border-left: 4px solid var(--spacespot-error);
+}
+
+.spacespot-badge-info {
+  background: var(--spacespot-info-light);
+  color: var(--spacespot-info);
+  padding: var(--spacespot-space-1) var(--spacespot-space-3);
+  border-radius: var(--spacespot-radius-full);
+  font-size: var(--spacespot-text-sm);
+  font-weight: var(--spacespot-weight-medium);
+  border-left: 4px solid var(--spacespot-info);
+}
