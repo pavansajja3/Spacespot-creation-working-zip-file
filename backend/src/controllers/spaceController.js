@@ -16,22 +16,60 @@ class SpaceController {
         order = "DESC",
       } = req.query;
 
-      const spaces = await SpaceService.getAllSpaces({
-        page: parseInt(page, 10),
-        limit: parseInt(limit, 10),
-        search,
-        status,
-        city,
-        spaceType,
-        buildingClass,
-        sortBy,
-        order,
-      });
+      const result = await SpaceService.getAllSpaces({
+  page: parseInt(page, 10),
+  limit: parseInt(limit, 10),
+  search,
+  status,
+  city,
+  spaceType,
+  buildingClass,
+  sortBy,
+  order,
+});
 
-      res.json({
-        success: true,
-        data: spaces,
-      });
+// handle different response formats
+const spacesArray =
+  result?.spaces ||
+  result?.data?.spaces ||
+  result?.data ||
+  result ||
+  [];
+
+const updatedSpaces = spacesArray.map((space) => {
+  const totalUnits = Number(
+    space.total_units ||
+    space.units_count ||
+    space.units ||
+    0
+  );
+
+  const availableUnits = Number(
+    space.available_units ||
+    space.availableUnits ||
+    space.available_units_count ||
+    0
+  );
+
+  const occupancy =
+    totalUnits > 0
+      ? Math.round(((totalUnits - availableUnits) / totalUnits) * 100)
+      : 0;
+
+  return {
+    ...space,
+    total_units: totalUnits,
+    available_units: availableUnits,
+    occupancy,
+  };
+});
+
+res.json({
+  success: true,
+  data: {
+    spaces: updatedSpaces,
+  },
+});
     } catch (error) {
       console.error("Error in getAllSpaces:", error);
       res.status(500).json({

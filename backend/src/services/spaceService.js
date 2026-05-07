@@ -52,7 +52,7 @@ class SpaceService {
           ]
         }
       ],
-      paranoid: false
+      paranoid: true
     });
 
     if (!space) return null;
@@ -164,17 +164,14 @@ class SpaceService {
     const space = await Space.findByPk(id);
     if (!space) throw new Error("Space not found");
 
-    await space.update({
-      deleted_at: new Date(),
-      deleted_by: deletedBy
-    });
+    await space.destroy({ force: true });
 
     return { message: "Space deleted successfully" };
   }
 
   static async getSpaceStatistics() {
     const totalSpaces = await Space.count({ where: { deleted_at: null } });
-    const pendingSpaces = await Space.count({ where: { status: "pending", deleted_at: null } });
+    const pendingSpaces = await Space.count({ where: { status: data.status || "draft", deleted_at: null } });
     const approvedSpaces = await Space.count({ where: { status: "approved", deleted_at: null } });
     const rejectedSpaces = await Space.count({ where: { status: "rejected", deleted_at: null } });
     const totalUnits = await Unit.count();

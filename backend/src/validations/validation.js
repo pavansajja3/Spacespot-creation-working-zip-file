@@ -66,9 +66,30 @@ const validateUpdateCustomer = [
 // Space validations
 const validateCreateSpace = [
   body('name').notEmpty().withMessage('Space name is required'),
-  body('address').notEmpty().withMessage('Address is required'),
-  body('city').notEmpty().withMessage('City is required'),
-  body('state').notEmpty().withMessage('State is required'),
+  body('name')
+  .notEmpty()
+  .withMessage('Space name is required'),
+
+body('address')
+  .if(body('status').equals('pending'))
+  .notEmpty()
+  .withMessage('address is required'),
+
+body('city')
+  .if(body('status').equals('pending'))
+  .notEmpty()
+  .withMessage('City is required'),
+
+body('state')
+  .if(body('status').equals('pending'))
+  .notEmpty()
+  .withMessage('State is required'),
+
+body('managedByPhone')
+  .if(body('status').equals('pending'))
+  .notEmpty()
+  .withMessage('Managed By Phone is required'),
+
   handleValidation
 ];
 

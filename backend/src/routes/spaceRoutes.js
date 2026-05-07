@@ -48,7 +48,48 @@ router.get("/statistics", authenticate, async (req, res) => {
 router.get("/", authenticate, async (req, res) => {
   try {
     const spaces = await SpaceService.getAllSpaces(req.query);
-    res.json({ success: true, data: spaces });
+
+    const spacesArray =
+      spaces?.spaces ||
+      spaces?.data?.spaces ||
+      spaces?.data ||
+      spaces ||
+      [];
+
+    const updatedSpaces = spacesArray.map((space) => {
+      const totalUnits = Number(
+        space.total_units ||
+        space.units_count ||
+        space.units ||
+        0
+      );
+
+      const availableUnits = Number(
+        space.available_units ||
+        space.availableUnits ||
+        space.available_units_count ||
+        0
+      );
+
+      const occupancy =
+        totalUnits > 0
+          ? Math.round(((totalUnits - availableUnits) / totalUnits) * 100)
+          : 0;
+
+      return {
+        ...space,
+        total_units: totalUnits,
+        available_units: availableUnits,
+        occupancy,
+      };
+    });
+
+    res.json({
+      success: true,
+      data: {
+        spaces: updatedSpaces,
+      },
+    });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }
@@ -73,7 +114,28 @@ router.get("/:id", authenticate, async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 });
+const getDocumentTypeFromFileName = (fileName = "") => {
+  const name = fileName.toLowerCase();
 
+  if (name.includes("guideline") || name.includes("guidelines") || name.includes("rules")) {
+    return "guidelines";
+  }
+
+  if (name.includes("safety") || name.includes("fire") || name.includes("emergency")) {
+    return "safety";
+  }
+
+  if (
+    name.includes("legal") ||
+    name.includes("agreement") ||
+    name.includes("contract") ||
+    name.includes("lease")
+  ) {
+    return "legal";
+  }
+
+  return "other";
+};
 // =======================
 // CREATE SPACE
 // =======================
@@ -111,7 +173,7 @@ router.post(
           ...req.body,
           images,
           documents,
-          status: "pending"
+          status: req.body.status || "draft"
         },
         req.user.id
       );
@@ -121,7 +183,8 @@ router.post(
         for (let file of req.files.documents) {
           await Document.create({
             document_reference: `DOC-${Date.now()}-${Math.random()}`,
-            document_type: "other",
+            space_id: space.id,
+            document_type: getDocumentTypeFromFileName(file.originalname),
             title: file.originalname,
             description: "",
             file_url: `/uploads/spaces/documents/${file.filename || file.originalname}`,
@@ -129,7 +192,7 @@ router.post(
             file_size: file.size,
             file_type: file.mimetype,
             created_by: req.user.id,
-            status: "active"
+            status: "approved"
           });
         }
       }
@@ -193,7 +256,7 @@ router.put("/:id/reject", authenticate, authorize("admin"), async (req, res) => 
 // =======================
 // DELETE
 // =======================
-router.delete("/:id", authenticate, authorize("admin"), async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     await SpaceService.deleteSpace(req.params.id, req.user.id);
 

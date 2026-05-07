@@ -131,7 +131,7 @@ export default function CreateLease() {
     leasedTo: "",
     leasePrice: "",
     leasePeriodCount: "",
-    leasePeriodUnit: "Select an option",
+    leasePeriodUnit: "",
     leaseStartDate: "",
     leaseEndDate: "",
     spaceTncStatus: "Accepted",
@@ -145,18 +145,34 @@ export default function CreateLease() {
     paymentStatus: "Pending",
   });
 
-  const updateField = <K extends keyof LeaseFormData>(
-    key: K,
-    value: LeaseFormData[K]
-  ) => {
-    setForm((prev) => ({ ...prev, [key]: value }));
-  };
+   const updateField = <K extends keyof LeaseFormData>(
+  key: K,
+  value: LeaseFormData[K]
+) => {
+  setForm((prev) => ({ ...prev, [key]: value }));
+};
 
+// ✅ ADD HERE
+const calculateEndDate = () => {
+  if (!form.leaseStartDate || !form.leasePeriodCount || !form.leasePeriodUnit) return;
+
+  const date = new Date(form.leaseStartDate);
+  const count = Number(form.leasePeriodCount);
+
+  if (form.leasePeriodUnit === "month") {
+    date.setMonth(date.getMonth() + count);
+  }
+
+  if (form.leasePeriodUnit === "year") {
+    date.setFullYear(date.getFullYear() + count);
+  }
+
+  updateField("leaseEndDate", date.toISOString().split("T")[0]);
+};
   useEffect(() => {
     const fetchLookupData = async () => {
       try {
         setLookupLoading(true);
-
         const [unitRes, customerRes] = await Promise.all([
           api.get("/units/available"),
           api.get("/customers"),
@@ -218,7 +234,9 @@ export default function CreateLease() {
 
     fetchLookupData();
   }, []);
-
+useEffect(() => {
+  calculateEndDate();
+}, [form.leaseStartDate, form.leasePeriodCount, form.leasePeriodUnit]);
   const filteredUnits = useMemo(() => {
     const query = unitSearch.toLowerCase();
 
@@ -576,7 +594,7 @@ export default function CreateLease() {
                       style={inputStyle}
                       value={form.leasePeriodCount}
                       onChange={(e) =>
-                        updateField("leasePeriodUnit", e.target.value as string)
+                         updateField("leasePeriodCount", e.target.value)
                       }
                       placeholder="Number"
                     />
@@ -589,6 +607,7 @@ export default function CreateLease() {
                       }
                     >
                       <option>Select an option</option>
+                      <option>Week</option>
                       <option>Month</option>
                       <option>Year</option>
                     </select>

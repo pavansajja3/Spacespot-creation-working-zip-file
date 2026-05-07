@@ -2,22 +2,22 @@ import React, { useEffect, useMemo, useState } from 'react';
 import api from '../src/api/axios';
 import {
   BookOpen,
-  BriefcaseBusiness,
   ChevronDown,
-  FileCheck2,
   FileText,
-  FileWarning,
-  ReceiptText,
   Search,
-  Shield,
   ShieldAlert,
-  Store,
   TriangleAlert,
-  Upload,
 } from 'lucide-react';
 import { toast } from 'sonner';
 
-type DocumentCategory = 'Guidelines' | 'Safety' | 'Legal' | 'Insurance' | 'Template' | 'Finance' | 'Marketing';
+type DocumentCategory =
+  | 'Guidelines'
+  | 'Safety'
+  | 'Legal'
+  | 'Insurance'
+  | 'Template'
+  | 'Finance'
+  | 'Marketing';
 
 interface DocumentItem {
   id: string;
@@ -27,143 +27,98 @@ interface DocumentItem {
   spaceId: string;
   unitScope: string;
   file_url?: string;
-  icon: React.ComponentType<{ size?: number; color?: string }>;
 }
 
-const INITIAL_SELECTED_UNITS: Record<string, string> = {
-  'DOC-002': 'All Units',
-};
-
-const getCategoryTheme = (category: DocumentCategory) => {
-  switch (category) {
-    case 'Guidelines':
-      return {
-        border: 'var(--spacespot-cyan-300)',
-        pillBg: 'var(--spacespot-cyan-pale)',
-        pillText: 'var(--spacespot-cyan-dark)',
-        iconColor: 'var(--spacespot-cyan-primary)',
-      };
-    case 'Safety':
-      return {
-        border: 'var(--spacespot-warning)',
-        pillBg: 'var(--spacespot-warning-light)',
-        pillText: 'var(--spacespot-warning)',
-        iconColor: 'var(--spacespot-warning)',
-      };
-    case 'Legal':
-      return {
-        border: 'var(--spacespot-error)',
-        pillBg: 'var(--spacespot-error-light)',
-        pillText: 'var(--spacespot-error)',
-        iconColor: 'var(--spacespot-error)',
-      };
-    case 'Insurance':
-      return {
-        border: 'var(--spacespot-info)',
-        pillBg: 'var(--spacespot-info-light)',
-        pillText: 'var(--spacespot-info)',
-        iconColor: 'var(--spacespot-info)',
-      };
-    case 'Template':
-      return {
-        border: 'var(--spacespot-warning)',
-        pillBg: 'var(--spacespot-warning-light)',
-        pillText: 'var(--spacespot-warning)',
-        iconColor: 'var(--spacespot-warning)',
-      };
-    case 'Finance':
-      return {
-        border: 'var(--spacespot-warning)',
-        pillBg: 'var(--spacespot-warning-light)',
-        pillText: 'var(--spacespot-warning)',
-        iconColor: 'var(--spacespot-warning)',
-      };
-    default:
-      return {
-        border: 'var(--spacespot-info)',
-        pillBg: 'var(--spacespot-info-light)',
-        pillText: 'var(--spacespot-info)',
-        iconColor: 'var(--spacespot-info)',
-      };
-  }
-};
 const mapDocumentTypeToCategory = (type: string): DocumentCategory => {
-  switch (type) {
+  switch ((type || '').toLowerCase()) {
+    case 'guidelines':
+    case 'guideline':
     case 'policy':
       return 'Guidelines';
+
+    case 'safety':
+      return 'Safety';
+
+    case 'legal':
     case 'contract':
     case 'lease_agreement':
     case 'addendum':
       return 'Legal';
+
     case 'invoice':
     case 'receipt':
       return 'Finance';
+
     default:
       return 'Template';
   }
 };
+
 export default function CreateDocuments() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState<'All' | DocumentCategory>('All');
   const [spaceFilter, setSpaceFilter] = useState('All');
-  const [selectedUnitById, setSelectedUnitById] = useState(INITIAL_SELECTED_UNITS);
+
   const [documents, setDocuments] = useState<DocumentItem[]>([]);
+  const [spaces, setSpaces] = useState<any[]>([]);
+
   const [viewFileUrl, setViewFileUrl] = useState<string | null>(null);
+
+  const [showUpload, setShowUpload] = useState(false);
+  const [selectedSpaceId, setSelectedSpaceId] = useState('');
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-        useEffect(() => {
-          let active = true;
 
-          const loadDocuments = async () => {
-            try {
-              setLoading(true);
-              setError('');
+  const loadDocuments = async (selectedSpace = spaceFilter) => {
+    try {
+      setLoading(true);
+      setError('');
 
-              const response = await api.get('/documents', {
-                params: { limit: 100 },
-              });
+      const params: any = { limit: 100 };
+      if (selectedSpace !== 'All') {
+        params.space_id = selectedSpace;
+      }
 
-              const data = response.data?.data || response.data;
-              const rows = Array.isArray(data)
-                ? data
-                : data?.documents || data?.rows || [];
+      const response = await api.get('/documents', { params });
 
-              if (active) {
-                setDocuments(
-                  rows.map((doc: any) => ({
-                    id: String(doc.id ?? ''),
-                    title: String(doc.title ?? doc.name ?? '-'),
-                    category: mapDocumentTypeToCategory(doc.document_type),
-                    description: String(doc.description ?? '-'),
-                    spaceId: String(doc.space_id ?? doc.spaceId ?? 'SP001'),
-                    unitScope: String(doc.unit_scope ?? doc.unitScope ?? 'All Units'),
-                    file_url: doc.file_url,
-                    icon: FileText,
-                  }))
-                );
-              }
-            } catch (err) {
-              if (active) {
-                console.error('Documents API error:', err);
-                setError(
-                  (err as any)?.response?.data?.message ||
-                  'Failed to load documents'
-                );
-                setDocuments([]);
-              }
-            } finally {
-              if (active) {
-                setLoading(false);
-              }
-            }
-          };
+      const data = response.data?.data || response.data;
+      const rows = Array.isArray(data)
+        ? data
+        : data?.documents || data?.rows || [];
 
-          loadDocuments();
+      const spacesResponse = await api.get('/spaces');
+      const spacesData = spacesResponse.data?.data || spacesResponse.data;
+      const spaceRows = Array.isArray(spacesData)
+        ? spacesData
+        : spacesData?.spaces || spacesData?.rows || [];
 
-          return () => {
-            active = false;
-          };
-        }, []);
+      setSpaces(spaceRows);
+
+      setDocuments(
+        rows.map((doc: any) => ({
+          id: String(doc.id ?? ''),
+          title: String(doc.title ?? doc.name ?? doc.file_name ?? '-'),
+          category: mapDocumentTypeToCategory(doc.document_type),
+          description: String(doc.description ?? '-'),
+          spaceId: doc.space_id ? String(doc.space_id) : '',
+          unitScope: String(doc.unit_scope ?? doc.unitScope ?? 'All Units'),
+          file_url: doc.file_url,
+        }))
+      );
+    } catch (err) {
+      console.error('Documents API error:', err);
+      setError((err as any)?.response?.data?.message || 'Failed to load documents');
+      setDocuments([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadDocuments(spaceFilter);
+  }, [spaceFilter]);
 
   const filteredDocuments = useMemo(() => {
     const query = searchTerm.trim().toLowerCase();
@@ -175,27 +130,99 @@ export default function CreateDocuments() {
         document.description.toLowerCase().includes(query) ||
         document.category.toLowerCase().includes(query);
 
-      const matchesCategory = categoryFilter === 'All' || document.category === categoryFilter;
-      const matchesSpace = spaceFilter === 'All' || document.spaceId === spaceFilter;
+      const matchesCategory =
+        categoryFilter === 'All' || document.category === categoryFilter;
+
+      const matchesSpace =
+      spaceFilter === 'All' ||
+      String(document.spaceId) === String(spaceFilter);
 
       return matchesSearch && matchesCategory && matchesSpace;
     });
   }, [documents, categoryFilter, searchTerm, spaceFilter]);
 
   const stats = useMemo(() => {
-  return {
-    total: documents.length,
-    guidelines: documents.filter((document) => document.category === 'Guidelines').length,
-    safety: documents.filter((document) => document.category === 'Safety').length,
-    legal: documents.filter((document) => document.category === 'Legal').length,
-  };
-}, [documents]);
+    return {
+        total: filteredDocuments.length,
+        guidelines: filteredDocuments.filter(d => d.category === 'Guidelines').length,
+        safety: filteredDocuments.filter(d => d.category === 'Safety').length,
+        legal: filteredDocuments.filter(d => d.category === 'Legal').length,
+    };
+  }, [filteredDocuments]);
 
-  const handleGenerate = (document: DocumentItem) => {
-    const selectedUnit = selectedUnitById[document.id] ?? document.unitScope;
-    toast.success(`${document.title} is being generated`, {
-      description: `${spaceFilter} • ${selectedUnit}`,
-    });
+  const handleView = async (document: DocumentItem) => {
+    if (!document.file_url) return;
+
+    const fileUrl = `http://localhost:3000${document.file_url}`;
+
+    if (document.file_url.toLowerCase().endsWith('.pdf')) {
+      const response = await fetch(fileUrl);
+      const blob = await response.blob();
+      const pdfUrl = URL.createObjectURL(blob);
+      setViewFileUrl(pdfUrl);
+    } else {
+      window.open(fileUrl, '_blank');
+    }
+  };
+  const handleDownload = async (url?: string, fileName?: string) => {
+  if (!url) return;
+
+  try {
+    const response = await fetch(`http://localhost:3000${url}`);
+
+    const blob = await response.blob();
+
+    const link = document.createElement("a");
+    link.href = window.URL.createObjectURL(blob);
+    link.download = fileName || url.split("/").pop() || "document";
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+
+    window.URL.revokeObjectURL(link.href);
+  } catch (err) {
+    console.error("Download failed", err);
+    toast.error("Download failed");
+  }
+};
+  const handleDelete = async (id: string) => {
+    const confirmDelete = window.confirm('Delete this document?');
+    if (!confirmDelete) return;
+
+    try {
+      await api.delete(`/documents/${id}`);
+      setDocuments((prev) => prev.filter((doc) => doc.id !== id));
+      toast.success('Deleted successfully');
+    } catch (err) {
+      console.error(err);
+      toast.error('Delete failed');
+    }
+  };
+
+  const handleUpload = async () => {
+    if (!selectedSpaceId || !selectedFile) {
+      toast.error('Select space and file');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('documents', selectedFile);
+    formData.append('space_id', selectedSpaceId);
+
+    try {
+      await api.post('/documents/upload', formData, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+
+      toast.success('Uploaded successfully');
+      setShowUpload(false);
+      setSelectedSpaceId('');
+      setSelectedFile(null);
+      loadDocuments();
+    } catch (err) {
+      console.error(err);
+      toast.error('Upload failed');
+    }
   };
 
   return (
@@ -211,41 +238,64 @@ export default function CreateDocuments() {
                 backgroundColor: 'var(--spacespot-cyan-primary)',
                 display: 'grid',
                 placeItems: 'center',
-                boxShadow: '0 10px 18px rgba(20, 216, 204, 0.18)',
               }}
             >
-              <FileText size={18} color="var(--spacespot-white)" />
+              <FileText size={18} color="white" />
             </div>
 
             <div>
-              <div style={{ fontSize: '13px', fontWeight: 700, color: 'var(--spacespot-navy-primary)', marginBottom: '2px' }}>Generate Documents</div>
-              <div style={{ fontSize: '10px', color: 'var(--spacespot-gray-500)' }}>Create professional documents for your spaces and units</div>
+              <div style={{ fontSize: '13px', fontWeight: 700 }}>
+                Generate Documents
+              </div>
+              <div style={{ fontSize: '10px', color: 'var(--spacespot-gray-500)' }}>
+                Create professional documents for your spaces and units
+              </div>
             </div>
           </div>
 
-          <button
-            type="button"
-            style={{
-              border: 'none',
-              backgroundColor: 'var(--spacespot-navy-primary)',
-              color: 'var(--spacespot-white)',
-              borderRadius: '8px',
-              padding: '0 12px',
-              height: '30px',
-              fontSize: '11px',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '6px',
-              cursor: 'pointer',
-            }}
-          >
-            All Spaces <ChevronDown size={14} />
-          </button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <button
+              type="button"
+              style={{
+                border: 'none',
+                backgroundColor: 'var(--spacespot-navy-primary)',
+                color: 'white',
+                borderRadius: '8px',
+                padding: '0 12px',
+                height: '30px',
+                fontSize: '11px',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '6px',
+                cursor: 'pointer',
+              }}
+            >
+              All Spaces <ChevronDown size={14} />
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setShowUpload(true)}
+              style={{
+                background: '#14d8cc',
+                color: '#fff',
+                border: 'none',
+                borderRadius: '8px',
+                padding: '0 14px',
+                height: '30px',
+                cursor: 'pointer',
+                fontSize: '11px',
+                fontWeight: 600,
+              }}
+            >
+              Upload
+            </button>
+          </div>
         </div>
 
         <div
           style={{
-            backgroundColor: 'var(--spacespot-white)',
+            backgroundColor: 'white',
             border: '1.5px solid var(--spacespot-gray-300)',
             borderRadius: '10px',
             padding: '12px',
@@ -256,7 +306,7 @@ export default function CreateDocuments() {
           }}
         >
           <div style={{ position: 'relative' }}>
-            <Search size={13} color="var(--spacespot-gray-400)" style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={13} style={{ position: 'absolute', left: '11px', top: '50%', transform: 'translateY(-50%)' }} />
             <input
               type="text"
               placeholder="Search documents..."
@@ -268,8 +318,6 @@ export default function CreateDocuments() {
                 padding: '0 12px 0 32px',
                 border: '1px solid var(--spacespot-gray-300)',
                 borderRadius: '7px',
-                backgroundColor: 'var(--spacespot-white)',
-                color: 'var(--spacespot-navy-primary)',
                 fontSize: '11px',
               }}
             />
@@ -278,14 +326,7 @@ export default function CreateDocuments() {
           <select
             value={categoryFilter}
             onChange={(event) => setCategoryFilter(event.target.value as 'All' | DocumentCategory)}
-            style={{
-              height: '32px',
-              border: '1px solid var(--spacespot-gray-300)',
-              borderRadius: '7px',
-              backgroundColor: 'var(--spacespot-white)',
-              padding: '0 10px',
-              fontSize: '11px',
-            }}
+            style={{ height: '32px', borderRadius: '7px', fontSize: '11px' }}
           >
             <option value="All">All</option>
             <option value="Guidelines">Guidelines</option>
@@ -299,205 +340,217 @@ export default function CreateDocuments() {
 
           <select
             value={spaceFilter}
-            onChange={(event) => setSpaceFilter(event.target.value)}
-            style={{
-              height: '32px',
-              border: '1px solid var(--spacespot-gray-300)',
-              borderRadius: '7px',
-              backgroundColor: 'var(--spacespot-white)',
-              padding: '0 10px',
-              fontSize: '11px',
-            }}
+            onChange={(event) => {
+            const value = event.target.value;
+            setSpaceFilter(value);
+            
+          }}
+            style={{ height: '32px', borderRadius: '7px', fontSize: '11px' }}
           >
             <option value="All">All Spaces</option>
-            <option value="SP001">SP001</option>
-            <option value="All">All Spaces</option>
+            {spaces.map((space) => (
+              <option key={space.id} value={String(space.id)}>
+                {space.name}
+              </option>
+            ))}
           </select>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '10px', marginBottom: '16px' }}>
           {[
-            { title: 'Total Documents', value: stats.total, icon: FileText, accent: 'var(--spacespot-cyan-300)', iconColor: 'var(--spacespot-cyan-primary)' },
-            { title: 'Guidelines', value: stats.guidelines, icon: BookOpen, accent: 'var(--spacespot-cyan-300)', iconColor: 'var(--spacespot-success)' },
-            { title: 'Safety', value: stats.safety, icon: ShieldAlert, accent: 'var(--spacespot-warning)', iconColor: 'var(--spacespot-warning)' },
-            { title: 'Legal', value: stats.legal, icon: TriangleAlert, accent: 'var(--spacespot-error)', iconColor: 'var(--spacespot-error)' },
+            { title: 'Total Documents', value: stats.total, filter: 'All' as const, icon: FileText },
+            { title: 'Guidelines', value: stats.guidelines, filter: 'Guidelines' as const, icon: BookOpen },
+            { title: 'Safety', value: stats.safety, filter: 'Safety' as const, icon: ShieldAlert },
+            { title: 'Legal', value: stats.legal, filter: 'Legal' as const, icon: TriangleAlert },
           ].map((stat) => (
             <div
               key={stat.title}
+              onClick={() => setCategoryFilter(stat.filter)}
               style={{
-                backgroundColor: 'var(--spacespot-white)',
-                border: `1.5px solid ${stat.accent}`,
+                backgroundColor: 'white',
+                border: '1.5px solid var(--spacespot-cyan-300)',
                 borderRadius: '10px',
                 padding: '10px 12px',
                 minHeight: '62px',
                 display: 'flex',
                 justifyContent: 'space-between',
-                alignItems: 'flex-start',
+                cursor: 'pointer',
               }}
             >
               <div>
-                <div style={{ fontSize: '9px', color: 'var(--spacespot-gray-400)', marginBottom: '7px' }}>{stat.title}</div>
-                <div style={{ fontSize: '27px', lineHeight: 1, fontWeight: 700, color: 'var(--spacespot-navy-primary)' }}>{stat.value}</div>
+                <div style={{ fontSize: '9px', color: 'var(--spacespot-gray-400)', marginBottom: '7px' }}>
+                  {stat.title}
+                </div>
+                <div style={{ fontSize: '27px', fontWeight: 700 }}>
+                  {stat.value}
+                </div>
               </div>
+              <stat.icon size={16} />
+            </div>
+          ))}
+        </div>
 
+        {loading && <div style={{ textAlign: 'center' }}>Loading documents...</div>}
+
+        {error && !loading && (
+          <div style={{ textAlign: 'center', color: 'red' }}>{error}</div>
+        )}
+
+        {!loading && !error && filteredDocuments.length === 0 && (
+          <div style={{ textAlign: 'center', color: '#94a3b8', fontSize: '12px' }}>
+            No documents found
+          </div>
+        )}
+
+        {!loading && !error && filteredDocuments.length > 0 && (
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, minmax(0, 1fr))', gap: '12px' }}>
+            {filteredDocuments.map((document) => (
               <div
+                key={document.id}
                 style={{
-                  width: '24px',
-                  height: '24px',
-                  borderRadius: '8px',
-                  backgroundColor: 'var(--spacespot-gray-50)',
-                  display: 'grid',
-                  placeItems: 'center',
+                  backgroundColor: 'white',
+                  border: '1px solid var(--spacespot-gray-200)',
+                  borderRadius: '10px',
+                  padding: '12px',
+                  minHeight: '136px',
+                  display: 'flex',
+                  flexDirection: 'column',
                 }}
               >
-                <stat.icon size={13} color={stat.iconColor} />
+                <div>
+                  <div style={{ fontSize: '12px', fontWeight: 600 }}>
+                    {document.title}
+                  </div>
+
+                  <div style={{ fontSize: '10px', color: '#64748b', marginTop: '6px' }}>
+                    {document.description}
+                  </div>
+
+                  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '6px' }}>
+                    Space: {
+                      spaces.find((s) => String(s.id) === document.spaceId)?.name || '-'
+                    }
+                  </div>
+
+                  <div style={{ fontSize: '10px', color: '#14d8cc', marginTop: '6px' }}>
+                    {document.category}
+                  </div>
+                </div>
+
+                <div style={{ marginTop: 'auto', display: 'flex', gap: '10px' }}>
+                  <button type="button" onClick={() => handleView(document)}>
+                    View
+                  </button>
+
+                  <button
+                      type="button"
+                      onClick={() => handleDownload(document.file_url, document.title)}
+                      style={{
+                        border: 'none',
+                        background: 'transparent',
+                        cursor: 'pointer',
+                        padding: 0,
+                        fontSize: '14px',
+                      }}
+                    >
+                      Download
+                    </button>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDelete(document.id)}
+                    style={{ color: 'red' }}
+                  >
+                    Delete
+                  </button>
+                </div>
               </div>
-            </div>
-         ))}
-          </div>  {/* CLOSE stats grid FIRST */}
-          <div>
-            {loading && (
-            <div style={{ padding: '24px 0', textAlign: 'center', fontSize: '11px', color: 'var(--spacespot-gray-500)' }}>
-              Loading documents...
-            </div>
-          )}
+            ))}
+          </div>
+        )}
+      </div>
 
-          {error && !loading && (
-            <div style={{ padding: '24px 0', textAlign: 'center', fontSize: '11px', color: 'red' }}>
-              {error}
-            </div>
-          )}
+      {showUpload && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.5)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div style={{ background: '#fff', padding: '20px', borderRadius: '10px', width: '360px' }}>
+            <h3>Upload Document</h3>
 
-          {!loading && !error && filteredDocuments.length === 0 && (
-            <div style={{ padding: '40px 0', textAlign: 'center', color: '#94a3b8', fontSize: '12px' }}>
-              No documents found
-            </div>
-          )}
-
-          {!loading && !error && filteredDocuments.length > 0 && (
-            <div style={{
-              display: 'grid',
-              gridTemplateColumns: 'repeat(3, minmax(0, 1fr))',
-              gap: '12px',
-            }}
+            <select
+              value={selectedSpaceId}
+              onChange={(e) => setSelectedSpaceId(e.target.value)}
             >
-              {filteredDocuments.map((document) => {
-  const theme = getCategoryTheme(document.category);
-  const Icon = document.icon;
-  const selectedUnit = selectedUnitById[document.id] ?? document.unitScope;
+              <option value="">Select Space</option>
+              {spaces.map((space) => (
+                <option key={space.id} value={String(space.id)}>
+                  {space.name}
+                </option>
+              ))}
+            </select>
 
-  return (
-    <div
-      key={document.id}
-      style={{
-        backgroundColor: 'var(--spacespot-white)',
-        border: '1px solid var(--spacespot-gray-200)',
-        borderRadius: '10px',
-        boxShadow: 'var(--spacespot-shadow-sm)',
-        padding: '12px',
-        minHeight: '136px',
-        display: 'flex',
-        flexDirection: 'column',
-      }}
-    >
-      <div>
-  <div style={{ fontSize: '12px', fontWeight: 600 }}>
-    {document.title}
-  </div>
+            <input
+              type="file"
+              onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+            />
 
-  <div style={{ fontSize: '10px', color: '#64748b', marginTop: '6px' }}>
-    {document.description}
-  </div>
+            <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '10px', marginTop: '16px' }}>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowUpload(false);
+                  setSelectedSpaceId('');
+                  setSelectedFile(null);
+                }}
+              >
+                Cancel
+              </button>
 
-  <div style={{ fontSize: '10px', color: '#94a3b8', marginTop: '6px' }}>
-    Space: {document.spaceId}
-  </div>
-</div>
-
-<div style={{ display: 'flex', gap: '8px', marginTop: 'auto' }}>
-  <button
-    type="button"
-    onClick={async () => {
-          if (!document.file_url) return;
-
-          const fileUrl = `http://localhost:3000${document.file_url}`;
-
-          if (document.file_url.toLowerCase().endsWith('.pdf')) {
-            const response = await fetch(fileUrl);
-            const blob = await response.blob();
-            const pdfUrl = URL.createObjectURL(blob);
-            setViewFileUrl(pdfUrl);
-          } else {
-            window.open(fileUrl, '_blank');
-          }
-        }}
-    style={{
-      border: 'none',
-      background: 'transparent',
-      color: '#0f172a',
-      cursor: 'pointer',
-      fontSize: '14px',
-    }}
-  >
-    View
-  </button>
-
-  <a
-    href={document.file_url ? `http://localhost:3000${document.file_url}` : '#'}
-    download
-  >
-    Download
-  </a>
-</div>
-
-    </div>
-  );
-})}
+              <button type="button" onClick={handleUpload}>
+                Upload
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
-    </div>
-  </div>
-  {viewFileUrl && (
-  <div
-    style={{
-      position: "fixed",
-      inset: 0,
-      background: "rgba(0,0,0,0.6)",
-      zIndex: 9999,
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    }}
-  >
-    <div
-      style={{
-        width: "85%",
-        height: "85%",
-        background: "#fff",
-        borderRadius: "12px",
-        padding: "12px",
-      }}
-    >
-      <button
-        onClick={() => setViewFileUrl(null)}
-        style={{
-          float: "right",
-          marginBottom: "8px",
-          cursor: "pointer",
-        }}
-      >
-        Close
-      </button>
+      {viewFileUrl && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            zIndex: 9999,
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          <div style={{ width: '85%', height: '85%', background: '#fff', borderRadius: '12px', padding: '12px' }}>
+            <button
+              type="button"
+              onClick={() => setViewFileUrl(null)}
+              style={{ float: 'right', marginBottom: '8px', cursor: 'pointer' }}
+            >
+              Close
+            </button>
 
-      <iframe
-          src={viewFileUrl}
-          title="PDF Viewer"
-          style={{ width: "100%", height: "95%", border: "none" }}
-        />
+            <iframe
+              src={viewFileUrl}
+              title="PDF Viewer"
+              style={{ width: '100%', height: '95%', border: 'none' }}
+            />
+          </div>
+        </div>
+      )}
     </div>
-  </div>
-)}
-</div>
-);
+  );
 }

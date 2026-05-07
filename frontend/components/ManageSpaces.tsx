@@ -6,7 +6,6 @@ import {
   Building2,
   ChevronDown,
   Circle,
-  Eye,
   MapPin,
   Pencil,
   Search,
@@ -67,7 +66,7 @@ export default function ManageSpaces() {
         "No location",
       address: space.address || "",
       type: space.type || space.property_type || space.category || "Space",
-      category: space.category || space.property_type || "",
+      category:  space.category ||  space.features?.category ||  space.property_type ||  space.type ||  "N/A",
       floors: Number(
           space.floor_count ||
           space.floors_count ||
@@ -88,9 +87,21 @@ export default function ManageSpaces() {
           space.available_units_count ||
           0
         ),
-      occupancy: Number(space.occupancy || 0),
-      status: String(space.status || "pending").toLowerCase(),
-    }));
+      occupancy: Number(
+          space.occupancy ??
+            (Number(space.total_units || space.units_count || space.units || 0) > 0
+              ? Math.round(
+                  ((Number(space.total_units || space.units_count || space.units || 0) -
+                    Number(space.available_units || space.availableUnits || space.available_units_count || 0)) /
+                    Number(space.total_units || space.units_count || space.units || 0)) *
+                    100
+                )
+              : 0)
+        ),
+      status: String(space.status || "pending").toLowerCase() === "active"
+      ? "approved"
+      : String(space.status || "pending").toLowerCase(),
+        }));
 
     setSpaces(normalizedSpaces);
   } catch (error) {
@@ -98,9 +109,6 @@ export default function ManageSpaces() {
     setSpaces([]);
   }
 };
-  const handleView = (id: string) => {
-    navigate(`/manage/spaces/${id}`);
-  };
 
   const handleEdit = (id: string) => {
     navigate(`/manage/edit-space/${id}`);
@@ -133,7 +141,7 @@ export default function ManageSpaces() {
         }
 
         if (dashboardFilter === "leases") {
-          return space.status === "approved" || space.status === "active";
+          return space.status === "approved";
         }
 
         if (dashboardFilter === "precinct") {
@@ -535,10 +543,12 @@ export default function ManageSpaces() {
                 }}
               >
                 <th style={thStyle}>SPACE</th>
-                <th style={thStyle}>LOCATION & TYPE</th>
+                <th style={thStyle}>Address</th>
+                <th style={thStyle}>Category</th>
                 <th style={thStyle}>STRUCTURE</th>
-                <th style={thStyle}>OCCUPANCY & STATUS</th>
-                <th style={{ ...thStyle, textAlign: "center" }}>ACTIONS</th>
+                <th style={thStyle}>OCCUPANCY </th>
+                <th style={thStyle}>STATUS</th>
+                
               </tr>
             </thead>
 
@@ -559,13 +569,7 @@ export default function ManageSpaces() {
                     </td>
 
                     <td style={tdStyle}>
-                      <div
-                        style={{
-                          display: "flex",
-                          alignItems: "center",
-                          gap: "5px",
-                        }}
-                      >
+                      <div style={{ display: "flex", alignItems: "center", gap: "5px" }}>
                         <MapPin size={10} />
                         {space.location}
                       </div>
@@ -581,6 +585,10 @@ export default function ManageSpaces() {
                       >
                         {space.type}
                       </span>
+                    </td>
+
+                    <td style={tdStyle}>
+                      {space.category || "N/A"}
                     </td>
 
                     <td style={tdStyle}>
@@ -608,6 +616,12 @@ export default function ManageSpaces() {
                         />
                       </div>
 
+                      <div style={{ fontSize: "9px", fontWeight: 600 }}>
+                        {space.occupancy}%
+                      </div>
+                    </td>
+
+                    <td style={tdStyle}>
                       <span
                         style={{
                           fontSize: "8px",
@@ -618,47 +632,42 @@ export default function ManageSpaces() {
                       >
                         {space.status}
                       </span>
-                    </td>
 
-                    <td style={tdStyle}>
-                      <div
-                        style={{
-                          display: "flex",
-                          justifyContent: "center",
-                          gap: "8px",
-                        }}
-                      >
-                        <button
-                          type="button"
-                          onClick={() => handleView(space.id)}
-                          style={actionButtonStyle}
+                      {space.status === "draft" && (
+                        <div
+                          style={{
+                            display: "inline-flex",
+                            gap: "8px",
+                            marginLeft: "10px",
+                            verticalAlign: "middle",
+                          }}
                         >
-                          <Eye size={12} />
-                        </button>
+                          <button
+                            type="button"
+                            onClick={() => handleEdit(space.id)}
+                            style={actionButtonStyle}
+                            title="Edit draft"
+                          >
+                            <Pencil size={12} />
+                          </button>
 
-                        <button
-                          type="button"
-                          onClick={() => handleEdit(space.id)}
-                          style={actionButtonStyle}
-                        >
-                          <Pencil size={12} />
-                        </button>
-
-                        <button
-                          type="button"
-                          onClick={() => handleDelete(space.id)}
-                          style={actionButtonStyle}
-                        >
-                          <Trash2 size={12} />
-                        </button>
-                      </div>
+                          <button
+                            type="button"
+                            onClick={() => handleDelete(space.id)}
+                            style={actionButtonStyle}
+                            title="Delete draft"
+                          >
+                            <Trash2 size={12} />
+                          </button>
+                        </div>
+                      )}
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr>
                   <td
-                    colSpan={5}
+                    colSpan={6}
                     style={{
                       padding: "20px",
                       textAlign: "center",

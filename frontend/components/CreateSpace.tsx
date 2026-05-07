@@ -208,6 +208,7 @@ export default function CreateSpace() {
   const [editingFloorName, setEditingFloorName] = useState('');
   const [customCategory, setCustomCategory] = useState('');
   const [customFloorNames, setCustomFloorNames] = useState('');
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   const updateField = (key: keyof SpaceFormState, value: string) =>
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -223,11 +224,38 @@ export default function CreateSpace() {
       }
 
       if (!form.spaceName.trim()) {
-        toast.error('Space name is required');
-        return;
-      }
+          toast.error('Space name is required');
+          return;
+        }
 
-      const formData = new FormData();
+        if (status === 'pending') {
+          if (!form.spaceAddress.trim()) {
+            toast.error('Space address is required');
+            return;
+          }
+
+          if (!form.city.trim()) {
+            toast.error('City is required');
+            return;
+          }
+
+          if (!form.state.trim()) {
+            toast.error('State is required');
+            return;
+          }
+
+          if (!form.country.trim()) {
+            toast.error('Country is required');
+            return;
+          }
+
+          if (!form.postalCode.trim()) {
+            toast.error('Postal code is required');
+            return;
+          }
+        }
+
+const formData = new FormData();
 
       formData.append('name', form.spaceName);
       formData.append('description', '');
@@ -250,6 +278,8 @@ export default function CreateSpace() {
       formData.append('floors', JSON.stringify(floors));
       formData.append('amenities', JSON.stringify(precincts));
       formData.append('status', status);
+      formData.append('managedByPhone', form.managedByPhone);
+      formData.append('managedByEmail', form.managedByEmail);
 
       formData.append(
         'features',
@@ -963,7 +993,7 @@ export default function CreateSpace() {
 
             <button
               type="button"
-              onClick={handleSubmitForApproval}
+              onClick={() => setShowSubmitConfirm(true)}
               style={{
                 width: '100%',
                 marginTop: '14px',
@@ -985,7 +1015,83 @@ export default function CreateSpace() {
             </button>
           </div>
         </aside>
-      </div>
+            </div>
+
+      {showSubmitConfirm && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            backgroundColor: 'rgba(0,0,0,0.45)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 9999,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: '12px',
+              padding: '24px',
+              width: '360px',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.2)',
+            }}
+          >
+            <h3 style={{ marginTop: 0, color: NAVY }}>
+              Submit for Approval?
+            </h3>
+
+            <p style={{ fontSize: '13px', color: '#5f7286' }}>
+              Are you sure you want to submit this space for admin approval?
+            </p>
+
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'flex-end',
+                gap: '10px',
+                marginTop: '20px',
+              }}
+            >
+              <button
+                type="button"
+                onClick={() => setShowSubmitConfirm(false)}
+                style={{
+                  border: '1px solid #cfd7e2',
+                  backgroundColor: '#fff',
+                  color: NAVY,
+                  borderRadius: '8px',
+                  padding: '9px 18px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Cancel
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setShowSubmitConfirm(false);
+                  handleSubmitForApproval();
+                }}
+                style={{
+                  border: 'none',
+                  backgroundColor: NAVY,
+                  color: '#fff',
+                  borderRadius: '8px',
+                  padding: '9px 18px',
+                  fontWeight: 600,
+                  cursor: 'pointer',
+                }}
+              >
+                Confirm
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

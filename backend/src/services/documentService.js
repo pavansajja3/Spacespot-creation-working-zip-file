@@ -47,7 +47,8 @@ class DocumentService {
     });
   }
 
-  static async getAllDocuments(query = {}) {
+  static async getAllDocuments(query = {})
+   {
     const {
       page = 1,
       limit = 10,
@@ -59,6 +60,7 @@ class DocumentService {
       sortBy = 'createdAt',
       order = 'DESC'
     } = query;
+    const { space_id } = query;
 
     const offset = (page - 1) * limit;
     
@@ -82,7 +84,7 @@ class DocumentService {
     if (customer_id) {
       where.customer_id = customer_id;
     }
-
+    if (space_id) where.space_id = space_id;
     const { count, rows } = await Document.findAndCountAll({
       where,
       include: [{
@@ -96,6 +98,14 @@ class DocumentService {
         attributes: ['id', 'contact_person', 'email'],
         required: false
       }],
+      attributes: [
+          'id',
+          'title',
+          'document_type',
+          'file_url',
+          'space_id',   // ✅ IMPORTANT
+          'createdAt'
+        ],
       limit,
       offset,
       order: [[sortBy === 'created_at' ? 'createdAt' : sortBy, order]],
@@ -192,14 +202,12 @@ class DocumentService {
 
   static async deleteDocument(id, deletedBy) {
     const document = await Document.findByPk(id);
+
     if (!document) {
       throw new Error('Document not found');
     }
 
-    await document.update({
-      deleted_at: new Date(),
-      deleted_by: deletedBy
-    });
+    await document.destroy({ force: true });
 
     return { message: 'Document deleted successfully' };
   }

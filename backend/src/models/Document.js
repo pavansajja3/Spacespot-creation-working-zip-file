@@ -30,10 +30,20 @@ const Document = sequelize.define('Document', {
     },
     onDelete: 'SET NULL'
   },
-  document_type: {
-    type: DataTypes.ENUM('lease_agreement', 'addendum', 'invoice', 'receipt', 'contract', 'policy', 'other'),
-    allowNull: false
+  space_id: {
+  type: DataTypes.BIGINT,
+  allowNull: true,
+  references: {
+    model: 'spaces',
+    key: 'id'
   },
+  onDelete: 'SET NULL'
+},
+  document_type: {
+  type: DataTypes.ENUM('lease_agreement','addendum','invoice','receipt','contract','policy','guidelines','safety','legal','other'),
+  allowNull: false,
+  defaultValue: 'other'
+},
   title: {
     type: DataTypes.STRING(255),
     allowNull: false
@@ -110,23 +120,26 @@ const Document = sequelize.define('Document', {
   tableName: 'documents',
   timestamps: true,
   indexes: [
-    {
-      fields: ['document_reference'],
-      unique: true
-    },
-    {
-      fields: ['lease_id']
-    },
-    {
-      fields: ['customer_id']
-    },
-    {
-      fields: ['document_type']
-    },
-    {
-      fields: ['status']
-    }
-  ]
+  {
+    fields: ['document_reference'],
+    unique: true
+  },
+  {
+    fields: ['lease_id']
+  },
+  {
+    fields: ['customer_id']
+  },
+  {
+    fields: ['space_id']
+  },
+  {
+    fields: ['document_type']
+  },
+  {
+    fields: ['status']
+  }
+]
 });
 
 module.exports = Document;

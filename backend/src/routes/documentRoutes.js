@@ -11,6 +11,28 @@ const {
 } = require('../validations/validation');
 
 const DocumentService = require('../services/documentService');
+const getDocumentTypeFromFileName = (fileName = '') => {
+  const name = fileName.toLowerCase();
+
+  if (name.includes('guideline') || name.includes('guidelines') || name.includes('rules')) {
+    return 'guidelines';
+  }
+
+  if (name.includes('safety') || name.includes('fire') || name.includes('emergency')) {
+    return 'safety';
+  }
+
+  if (
+    name.includes('legal') ||
+    name.includes('agreement') ||
+    name.includes('contract') ||
+    name.includes('lease')
+  ) {
+    return 'legal';
+  }
+
+  return 'other';
+};
 
 
 // ✅ UPLOAD DOCUMENT
@@ -27,9 +49,10 @@ router.post('/upload', authenticate, upload.single('documents'), async (req, res
 
     const document = await Document.create({
       document_reference: `DOC-${Date.now()}`,
+      space_id: req.body.space_id || null,
       lease_id: req.body.lease_id || null,
       customer_id: req.body.customer_id || null,
-      document_type: req.body.document_type || 'other',
+      document_type: req.body.document_type || getDocumentTypeFromFileName(req.file.originalname),
       title: req.body.title || req.file.originalname,
       description: req.body.description || '',
       file_url: fileUrl,
@@ -37,7 +60,7 @@ router.post('/upload', authenticate, upload.single('documents'), async (req, res
       file_size: req.file.size,
       file_type: req.file.mimetype,
       created_by: req.user.id,
-      status: 'active'
+      status: 'approved'
     });
 
     res.status(201).json({
@@ -129,7 +152,7 @@ router.put('/:id', authenticate, validateUpdateDocument, async (req, res) => {
   }
 });
 
-router.delete('/:id', authenticate, authorize('admin'), async (req, res) => {
+router.delete('/:id', authenticate, async (req, res) => {
   try {
     await DocumentService.deleteDocument(req.params.id, req.user.id);
     res.json({
